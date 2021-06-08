@@ -1,49 +1,50 @@
 import 'package:conditional_builder/conditional_builder.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shop_app/blocs/login/login_cubit.dart';
+import 'package:shop_app/blocs/register/register_cubit.dart';
 import 'package:shop_app/components/default_button.dart';
 import 'package:shop_app/components/default_form_field.dart';
-import 'package:shop_app/components/default_text_button.dart';
 import 'package:shop_app/components/toast.dart';
 import 'package:shop_app/service/storage/cache_helper.dart';
 import 'package:shop_app/src/constants.dart';
-import 'package:shop_app/views/layout/shop_layout.dart';
-import 'package:shop_app/views/register_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+import 'layout/shop_layout.dart';
+
+class RegisterScreen extends StatelessWidget {
   var formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     var emailController = TextEditingController();
     var passwordController = TextEditingController();
+    var nameController = TextEditingController();
+    var phoneController = TextEditingController();
 
     return BlocProvider(
-      create: (context) => LoginCubit(),
-      child: BlocConsumer<LoginCubit, LoginState>(
+      create: (context) => RegisterCubit(),
+      child: BlocConsumer<RegisterCubit, RegisterState>(
         listener: (context, state) {
-          if (state is LoginSuccessState) {
-            if (state.loginModel.status) {
-              print(state.loginModel.data.token);
+          if (state is RegisterSuccessState) {
+            if (state.registerModel.status) {
+              print(state.registerModel.data.token);
               CacheHelper.saveData(
                 key: 'token',
-                value: state.loginModel.data.token,
+                value: state.registerModel.data.token,
               ).then((value) {
-                token = state.loginModel.data.token;
+                token = state.registerModel.data.token;
                 navigateAndReplace(context, ShopLayout());
               });
             } else {
               showToaster(
-                message: state.loginModel.message,
+                message: state.registerModel.message,
                 state: ToastStates.ERROR,
               );
             }
           }
         },
         builder: (context, state) {
-          var cubit = LoginCubit.get(context);
+          var cubit = RegisterCubit.get(context);
+
           return Scaffold(
             appBar: AppBar(),
             body: Center(
@@ -56,14 +57,14 @@ class LoginScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'LOGIN',
+                          'REGISTER',
                           style: Theme.of(context)
                               .textTheme
                               .headline4
                               .copyWith(color: Colors.black),
                         ),
                         Text(
-                          'login now to browse our hot offers',
+                          'Register now to browse our hot offers',
                           style: Theme.of(context)
                               .textTheme
                               .bodyText2
@@ -71,6 +72,20 @@ class LoginScreen extends StatelessWidget {
                         ),
                         SizedBox(
                           height: 30.0,
+                        ),
+                        defaultFormField(
+                          controller: nameController,
+                          inputType: TextInputType.name,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter your name';
+                            }
+                          },
+                          labelText: 'Name',
+                          prefix: Icons.person,
+                        ),
+                        SizedBox(
+                          height: 15.0,
                         ),
                         defaultFormField(
                           controller: emailController,
@@ -88,14 +103,13 @@ class LoginScreen extends StatelessWidget {
                         ),
                         defaultFormField(
                           onFieldSubmitted: (_) {
-                            login(context, emailController, passwordController);
+                            //login(context, emailController, passwordController);
                           },
                           controller: passwordController,
                           inputType: TextInputType.visiblePassword,
                           isPassword: cubit.isPassword,
                           validator: (String value) {
                             if (value.isEmpty) {
-                              print('emptyy');
                               return 'Password is too short';
                             }
                           },
@@ -108,16 +122,35 @@ class LoginScreen extends StatelessWidget {
                           },
                         ),
                         SizedBox(
+                          height: 15.0,
+                        ),
+                        defaultFormField(
+                          controller: phoneController,
+                          inputType: TextInputType.phone,
+                          validator: (value) {
+                            if (value.isEmpty) {
+                              return 'Please enter your phone';
+                            }
+                          },
+                          labelText: 'Phone',
+                          prefix: Icons.phone,
+                        ),
+                        SizedBox(
                           height: 30.0,
                         ),
                         ConditionalBuilder(
-                          condition: state is! LoginLoadingState,
+                          condition: state is! RegisterLoadingState,
                           builder: (context) => defaultButton(
                               function: () {
-                                login(context, emailController,
-                                    passwordController);
+                                register(
+                                  context: context,
+                                  emailController: emailController,
+                                  nameController: nameController,
+                                  passwordController: passwordController,
+                                  phoneController: phoneController,
+                                );
                               },
-                              text: 'login',
+                              text: 'register',
                               isUpperCase: true,
                               radius: 8),
                           fallback: (context) =>
@@ -126,22 +159,6 @@ class LoginScreen extends StatelessWidget {
                         SizedBox(
                           height: 15.0,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Don\'t have and account?',
-                            ),
-                            defaultTextButton(
-                                onPressed: () {
-                                  navigateTo(
-                                    context,
-                                    RegisterScreen(),
-                                  );
-                                },
-                                text: 'register now'),
-                          ],
-                        )
                       ],
                     ),
                   ),
@@ -154,10 +171,18 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  dynamic login(BuildContext context, emailController, passwordController) {
+  dynamic register(
+      {BuildContext context,
+      emailController,
+      passwordController,
+      nameController,
+      phoneController}) {
     if (formKey.currentState.validate()) {
-      LoginCubit.get(context).userLogin(
-          email: emailController.text, password: passwordController.text);
+      RegisterCubit.get(context).userRegister(
+          email: emailController.text,
+          password: passwordController.text,
+          name: nameController.text,
+          phone: phoneController.text);
     }
   }
 }

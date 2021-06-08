@@ -27,7 +27,7 @@ ThemeData darkTheme = ThemeData(
   scaffoldBackgroundColor: HexColor('333739'),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     type: BottomNavigationBarType.fixed,
-    selectedItemColor: Colors.deepOrange,
+    selectedItemColor: defaultColor,
     unselectedItemColor: Colors.grey,
     elevation: 20,
     backgroundColor: HexColor('333739'),
@@ -44,9 +44,7 @@ ThemeData darkTheme = ThemeData(
 
 ThemeData lightTheme = ThemeData(
   primarySwatch: defaultColor,
-  floatingActionButtonTheme: FloatingActionButtonThemeData(
-    backgroundColor: Colors.deepOrange,
-  ),
+
   scaffoldBackgroundColor: Colors.white,
   appBarTheme: AppBarTheme(
     backwardsCompatibility: false,
@@ -65,7 +63,7 @@ ThemeData lightTheme = ThemeData(
   ),
   bottomNavigationBarTheme: BottomNavigationBarThemeData(
     type: BottomNavigationBarType.fixed,
-    selectedItemColor: Colors.deepOrange,
+    selectedItemColor: defaultColor,
     elevation: 20,
     backgroundColor: Colors.white,
   ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shop_app/components/default_text_button.dart';
 import 'package:shop_app/models/boarding_model.dart';
+import 'package:shop_app/service/storage/cache_helper.dart';
 import 'package:shop_app/src/colors.dart';
 import 'package:shop_app/src/constants.dart';
 import 'package:shop_app/views/login_screen.dart';
@@ -38,11 +40,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          TextButton(
-            child: Text('SKIP'),
-            onPressed: () {
-              navigateAndReplace( context, LoginScreen());
-            },
+          defaultTextButton(
+            text: 'SKIP',
+            onPressed: submit,
           ),
         ],
       ),
@@ -90,7 +90,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 FloatingActionButton(
                   onPressed: () {
                     if (isLast) {
-                      navigateAndReplace( context, LoginScreen(),);
+                      submit();
                     } else {
                       boardController.nextPage(
                         duration: Duration(
@@ -110,6 +110,17 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         ),
       ),
     );
+  }
+
+  void submit() {
+    CacheHelper.saveData(key: 'onBoarding', value: true).then((value) {
+      if (value) {
+        navigateAndReplace(
+          context,
+          LoginScreen(),
+        );
+      }
+    });
   }
 
   Widget buildBoardingItem(BoardingModel model) => Column(

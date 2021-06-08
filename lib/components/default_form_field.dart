@@ -13,8 +13,11 @@ Widget defaultFormField({
   @required IconData prefix,
   IconData suffixIcon,
   isClickable = true,
+  Key key,
+  double radius = 4.0,
 }) =>
     TextFormField(
+      key: key,
       controller: controller,
       keyboardType: inputType,
       obscureText: isPassword,
@@ -31,6 +34,8 @@ Widget defaultFormField({
                 onPressed: suffixPressed,
               )
             : null,
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radius),
+        ),
       ),
     );

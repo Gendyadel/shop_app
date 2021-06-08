@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shop_app/blocs/app_cubit.dart';
-import 'package:shop_app/on_boarding/on_boarding_screen.dart';
 import 'package:shop_app/src/themes.dart';
 
 class AppRoot extends StatelessWidget {
-
   final bool isDark;
+  final Widget startWidget;
 
-  AppRoot(this.isDark);
+  AppRoot({
+    this.isDark,
+    this.startWidget,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AppCubit()
-          ..changeAppMode(
-            fromShared: isDark,
-          ) ),
+        BlocProvider(
+            create: (context) => AppCubit()
+              ..getHomeData()
+              ..getCategories()
+              ..getFavorites()
+              ..getUserData()),
       ],
       child: BlocConsumer<AppCubit, AppState>(
         listener: (context, states) {},
@@ -26,9 +30,8 @@ class AppRoot extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: lightTheme,
             darkTheme: darkTheme,
-            themeMode:
-                AppCubit.get(context).isDark ? ThemeMode.light : ThemeMode.dark,
-            home: OnBoardingScreen(),
+            themeMode: ThemeMode.light,
+            home: startWidget,
           );
         },
       ),
